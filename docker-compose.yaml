@@ -1,0 +1,26 @@
+version: "2"
+services:
+  mysql:
+    # *-----------------------------*
+    # To connect to the DB:
+    #   docker-compose exec mysql bash -c 'mysql -u root -p$MYSQL_ROOT_PASSWORD'
+    # *-----------------------------*
+    image: mysql:8.0.19
+    hostname: mysql
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpwd
+      - MYSQL_DATABASE=user-data
+      - MYSQL_USER=mysqluser
+      - MYSQL_PASSWORD=mysqlpw
+    volumes:
+      - ./config/mysql/custom-config.cnf:/etc/mysql/conf.d/custom-config.cnf
+      - ./sample_superstore_orders.csv:/data/orders.csv
+      - ./data/mysql:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: '/usr/bin/mysql --user=root --password=rootpwd --execute "SHOW DATABASES;"'
+      interval: 5s
+      timeout: 20s
+      retries: 30
